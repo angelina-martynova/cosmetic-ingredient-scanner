@@ -1,7 +1,7 @@
 import json
 from fuzzywuzzy import fuzz
 
-with open("backend/blacklist.json", encoding='utf-8') as f:
+with open("blacklist.json", encoding='utf-8') as f:
     blacklist = json.load(f)
 
 def check_ingredients(text):

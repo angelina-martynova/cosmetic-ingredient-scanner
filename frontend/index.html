@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="uk">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Сканер косметики</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        padding: 20px;
+      }
+      .result {
+        margin-top: 20px;
+      }
+      .danger {
+        color: red;
+      }
+      .warning {
+        color: orange;
+      }
+      .safe {
+        color: green;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🧴 Сканер інгредієнтів косметики</h1>
+    <form id="uploadForm">
+      <input
+        type="file"
+        id="imageInput"
+        name="image"
+        accept="image/*"
+        required
+      />
+      <button type="submit">Аналізувати</button>
+    </form>
+
+    <div class="result" id="result"></div>
+
+    <script>
+      const form = document.getElementById("uploadForm");
+      const resultDiv = document.getElementById("result");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const fileInput = document.getElementById("imageInput");
+        const formData = new FormData();
+        formData.append("image", fileInput.files[0]);
+
+        resultDiv.innerHTML = "⏳ Аналізую...";
+
+        const response = await fetch("http://127.0.0.1:5000/analyze", {
+          method: "POST",
+          body: formData,
+        });
+
+        const data = await response.json();
+
+        if (data.error) {
+          resultDiv.innerHTML = `<p style="color: red;">Помилка: ${data.error}</p>`;
+          return;
+        }
+
+        const ingredients = data.risky_ingredients;
+        const raw = data.raw_text.replace(/\n/g, "<br>");
+
+        let html = `<p><strong>🔍 Текст з фото:</strong><br>${raw}</p>`;
+
+        if (ingredients.length === 0) {
+          html += `<p class="safe">✅ Шкідливих інгредієнтів не знайдено!</p>`;
+        } else {
+          html += `<p class="danger">⚠️ Знайдено ${ingredients.length} потенційно небезпечних інгредієнтів:</p><ul>`;
+          for (let item of ingredients) {
+            html += `<li><strong>${item.name}</strong> (${item.match}) — <em>${item.description}</em> [${item.risk}]</li>`;
+          }
+          html += `</ul>`;
+        }
+
+        resultDiv.innerHTML = html;
+      });
+    </script>
+  </body>
+</html>
