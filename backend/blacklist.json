@@ -1,15 +1,20 @@
 [
-    {
-      "name": "Sodium Laureth Sulfate",
-      "aliases": ["SLES"],
-      "risk": "High",
-      "description": "Може викликати подразнення, пересушення шкіри."
-    },
-    {
-      "name": "Parabens",
-      "aliases": ["Methylparaben", "Ethylparaben"],
-      "risk": "Medium",
-      "description": "Підозрюються у гормональній активності."
-    }
-  ]
-  
+  {
+    "name": "Sodium Laureth Sulfate",
+    "aliases": ["SLES"],
+    "risk": "High",
+    "description": "Може викликати подразнення, пересушення шкіри."
+  },
+  {
+    "name": "Parabens",
+    "aliases": ["Methylparaben", "Ethylparaben"],
+    "risk": "Medium",
+    "description": "Підозрюються у гормональній активності."
+  },
+  {
+    "name": "Formaldehyde",
+    "aliases": [],
+    "risk": "High",
+    "description": "Канцероген, заборонений в деяких країнах."
+  }
+]
