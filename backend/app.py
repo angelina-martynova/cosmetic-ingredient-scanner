@@ -1,8 +1,10 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from ocr import extract_text
 from checker import check_ingredients
 
 app = Flask(__name__)
+CORS(app)
 
 @app.route('/analyze', methods=['POST'])
 def analyze_image():
