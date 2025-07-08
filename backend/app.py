@@ -4,7 +4,7 @@ from ocr import extract_text
 from checker import check_ingredients
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, origins="http://127.0.0.1:5500")
 
 @app.route('/analyze', methods=['POST'])
 def analyze_image():

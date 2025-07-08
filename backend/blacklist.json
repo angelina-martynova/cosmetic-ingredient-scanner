@@ -1,7 +1,7 @@
 [
   {
     "name": "Sodium Laureth Sulfate",
-    "aliases": ["SLES"],
+    "aliases": ["SLES", "Sodium Lauryl Ether Sulfate", "Sodium Laur eth Sulfate"],
     "risk": "High",
     "description": "Може викликати подразнення, пересушення шкіри."
   },
