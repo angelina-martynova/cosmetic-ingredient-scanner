@@ -59,5 +59,91 @@
     "risk": "High",
     "category": "Антисептик",
     "description": "Антибактеріальний агент, підозрюється у впливі на ендокринну систему."
+  },
+  {
+    "name": "Cetearyl Alcohol",
+    "aliases": [
+      "Цетеариловий спирт"
+    ],
+    "risk": "Safe",
+    "category": "Емольєнт / Зволожувач",
+    "description": "Зволоження, емульгатор. Низький ризик (1-2)."
+  },
+  {
+    "name": "Glycerin",
+    "aliases": [
+      "Гліцерин"
+    ],
+    "risk": "Safe",
+    "category": "Зволожувач",
+    "description": "Інтенсивне зволоження. Безпечний (1)."
+  },
+  {
+    "name": "Caprylic/Capric Triglyceride",
+    "aliases": [
+      "Тригліцерид каприлової",
+      "Тригліцерид капринової кислоти"
+    ],
+    "risk": "Safe",
+    "category": "Емольєнт / Зволожувач",
+    "description": "Легке зволоження, текстуроутворювач. Безпечний (1)."
+  },
+  {
+    "name": "Butyrospermum Parkii",
+    "aliases": [
+      "Shea Butter",
+      "Масло ши"
+    ],
+    "risk": "Safe",
+    "category": "Зволожувач",
+    "description": "Відновлення, захист бар'єру шкіри. Безпечний (1)."
+  },
+  {
+    "name": "Methylchloroisothiazolinone",
+    "aliases": [
+      "Метилізотіазолінон"
+    ],
+    "risk": "High",
+    "category": "Консервант",
+    "description": "Сильний консервант. Алергенний (6-7). Заборонений у деяких країнах."
+  },
+  {
+    "name": "Sodium Laureth Sulfate",
+    "aliases": [
+      "Лауретсульфат натрію",
+      "SLES"
+    ],
+    "risk": "Medium",
+    "category": "Очищуючий агент / ПАР",
+    "description": "Пінник, емульгатор. Може сушити шкіру (рівень 3-4)."
+  },
+  {
+    "name": "Fragrance",
+    "aliases": [
+      "Parfum",
+      "Ароматизатор",
+      "Synthetic Fragrance"
+    ],
+    "risk": "High",
+    "category": "Інше",
+    "description": "Може викликати алергію або подразнення. Рівень 5-8 (EWG)."
+  },
+  {
+    "name": "Disodium EDTA",
+    "aliases": [
+      "Динатрій ЕДТА"
+    ],
+    "risk": "Medium",
+    "category": "Стабілізатор",
+    "description": "Хелатуючий агент. Можливий ризик (3), в малих дозах безпечний."
+  },
+  {
+    "name": "Tetrasodium EDTA",
+    "aliases": [
+      "ЕДТА натрію"
+    ],
+    "risk": "Medium",
+    "category": "Стабілізатор",
+    "description": "Хелатування металів. Рівень ризику 3."
   }
 ]
