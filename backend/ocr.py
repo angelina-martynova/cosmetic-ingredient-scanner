@@ -4,7 +4,7 @@ from PIL import Image
 import pytesseract
 import io
 
-# Вказати шлях до tesseract, якщо не у PATH
+# Вказати шлях до tesseract, якщо не у PATH.
 pytesseract.pytesseract.tesseract_cmd = r"C:\\Program Files\\Tesseract-OCR\\tesseract.exe"
 
 def extract_text(file):
