@@ -40,7 +40,7 @@
           const data = await response.json();
 
           if (data.status === "success") {
-            let html = `<h3>🔍 Розпізнаний текст:</h3><pre>${data.text}</pre>`;
+            let html = `<h3>🔍 Розпізнаний текст:</h3><div>${data.text}</div>`;
 
             if (data.ingredients.length === 0) {
               html +=
@@ -54,11 +54,11 @@
                 else if (ing.risk === "Safe") className = "safe";
 
                 html += `<div class="${className}">
-                  <strong>${ing.name}</strong><br>
-                  Категорія: ${ing.category || "Невідомо"}<br>
-                  Ризик: ${ing.risk}<br>
-                  ${ing.description}
-                </div>`;
+            <strong>${ing.name}</strong><br>
+            Категорія: ${ing.category || "Невідомо"}<br>
+            Ризик: ${ing.risk}<br>
+            ${ing.description}
+          </div>`;
               });
             }
 
