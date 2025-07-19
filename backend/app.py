@@ -1,11 +1,9 @@
-from flask import Flask, request, jsonify, send_from_directory, render_template
+from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
-import os
-from ocr import extract_text
 import json
+from ocr import extract_text
 
 app = Flask(__name__, static_folder='../frontend/static', template_folder='../frontend')
-
 CORS(app)
 
 # Завантаження чорного списку інгредієнтів
@@ -21,6 +19,9 @@ def load_blacklist():
     all_blacklist = blacklist + blacklist_auto + full_blacklist
     unique_blacklist = []
     seen_names = set()
+    
+    print("Завантажено інгредієнтів:", len(all_blacklist))  # Логування кількості інгредієнтів
+
     for ingredient in all_blacklist:
         if ingredient['name'] not in seen_names:
             unique_blacklist.append(ingredient)
@@ -32,9 +33,19 @@ def load_blacklist():
 def check_ingredients(text):
     blacklist = load_blacklist()  # Завантажуємо злитий чорний список
     found_ingredients = []
+    
+    print("Текст для перевірки інгредієнтів:", text)  # Логування тексту перед пошуком
+
+    # Шукаємо інгредієнти в очищеному тексті
     for ingredient in blacklist:
+        # Перевіряємо чи є інгредієнт у тексті (без урахування регістру)
         if any(alias.lower() in text.lower() for alias in ingredient["aliases"]) or ingredient["name"].lower() in text.lower():
             found_ingredients.append(ingredient)
+            print(f"Знайдено інгредієнт: {ingredient['name']}")  # Логування знайдених інгредієнтів
+
+    if not found_ingredients:
+        print("Інгредієнти не знайдено.")  # Якщо інгредієнти не знайдені
+
     return found_ingredients
 
 # Головна сторінка
