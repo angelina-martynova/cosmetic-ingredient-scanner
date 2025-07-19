@@ -1,6 +1,6 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, send_from_directory
 from flask_cors import CORS
-import json
+import json, os
 from ocr import extract_text
 
 app = Flask(__name__, static_folder='../frontend/static', template_folder='../frontend')
