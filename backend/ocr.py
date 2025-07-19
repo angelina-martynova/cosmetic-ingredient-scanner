@@ -2,14 +2,16 @@ import cv2
 import numpy as np
 from PIL import Image
 import pytesseract
-pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 import io
 
+# Вказати шлях до tesseract, якщо не у PATH
+pytesseract.pytesseract.tesseract_cmd = r"C:\\Program Files\\Tesseract-OCR\\tesseract.exe"
+
 def extract_text(file):
-    image = Image.open(io.BytesIO(file.read()))
+    image = Image.open(io.BytesIO(file.read())).convert('RGB')
     image = np.array(image)
 
-    # Попередня обробка зображення
+    # Обробка зображення для покращення OCR
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     gray = cv2.bilateralFilter(gray, 9, 75, 75)
     thresh = cv2.adaptiveThreshold(
@@ -20,6 +22,6 @@ def extract_text(file):
     )
     contrast = cv2.convertScaleAbs(thresh, alpha=1.8, beta=0)
 
-    # Розпізнавання тексту
-    text = pytesseract.image_to_string(contrast, lang='eng')
+    # Розпізнавання тексту (англійська + українська)
+    text = pytesseract.image_to_string(contrast, lang='eng+ukr')
     return text

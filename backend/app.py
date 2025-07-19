@@ -8,19 +8,19 @@ CORS(app)
 
 @app.route("/analyze", methods=["POST"])
 def analyze_image():
-    if "image" not in request.files:
-        return jsonify({"error": "Зображення не надіслано."}), 400
-
-    image = request.files["image"]
-    text = extract_text(image)
-    results = check_ingredients(text)
-
-    risky = [r for r in results if r["risk"] != "Safe"]
-
-    return jsonify({
-        "risky_ingredients": risky,
-        "raw_text": text
-    })
+    try:
+        image = request.files["image"]
+        text = extract_text(image)
+        print("🔍 Розпізнаний текст:\n", text)
+        results = check_ingredients(text)
+        return jsonify({
+            "status": "success",
+            "text": text,
+            "ingredients": results
+        })
+    except Exception as e:
+        print("❌ Помилка:", e)
+        return jsonify({"status": "error", "message": "Помилка під час аналізу. Спробуйте інше фото."}), 500
 
 if __name__ == "__main__":
     app.run(debug=True)
