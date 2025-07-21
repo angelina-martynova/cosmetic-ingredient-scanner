@@ -1,7 +1,10 @@
-from flask import Flask, request, jsonify, render_template, send_from_directory
+from flask import Flask, request, jsonify, render_template, send_from_directory, make_response
 from flask_cors import CORS
 import json, os
 from ocr import extract_text
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+import io
 
 app = Flask(__name__, static_folder='../frontend/static', template_folder='../frontend')
 CORS(app)
@@ -48,6 +51,31 @@ def check_ingredients(text):
 
     return found_ingredients
 
+# Генерація PDF
+def generate_pdf(text, ingredients):
+    buffer = io.BytesIO()
+    c = canvas.Canvas(buffer, pagesize=letter)
+
+    # Додаємо заголовок
+    c.setFont("Helvetica-Bold", 16)
+    c.drawString(72, 750, "Результати аналізу складу косметичного засобу")
+
+    # Додаємо розпізнаний текст
+    c.setFont("Helvetica", 12)
+    c.drawString(72, 720, f"Розпізнаний текст: {text}")
+
+    # Додаємо знайдені інгредієнти
+    y_position = 690
+    for ingredient in ingredients:
+        c.drawString(72, y_position, f"{ingredient['name']}: {ingredient.get('description', 'Невідомо')}")
+        y_position -= 20
+
+    c.showPage()
+    c.save()
+
+    buffer.seek(0)
+    return buffer
+
 # Головна сторінка
 @app.route('/')
 def index():
@@ -66,6 +94,22 @@ def analyze_image():
         })
     except Exception as e:
         return jsonify({"status": "error", "message": "Помилка під час аналізу. Спробуйте інше фото."}), 500
+
+@app.route('/download_pdf', methods=['POST'])
+def download_pdf():
+    data = request.get_json()
+    text = data['text']
+    ingredients = data['ingredients']
+
+    # Генерація PDF
+    pdf_file = generate_pdf(text, ingredients)
+
+    # Відправка PDF як відповіді
+    response = make_response(pdf_file.read())
+    response.headers["Content-Type"] = "application/pdf"
+    response.headers["Content-Disposition"] = "attachment; filename=results.pdf"
+
+    return response
 
 # Статичні файли (CSS, зображення тощо)
 @app.route('/static/<path:filename>')

@@ -19,9 +19,15 @@
 
     <div class="result" id="result"></div>
 
+    <!-- Кнопка для збереження результату у PDF -->
+    <div class="button-container">
+      <button id="download-pdf">Зберегти як PDF</button>
+    </div>
+
     <script>
       const form = document.getElementById("upload-form");
       const resultDiv = document.getElementById("result");
+      let results = [];
 
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -47,6 +53,7 @@
                 '<p class="safe">✅ Шкідливих інгредієнтів не знайдено.</p>';
             } else {
               html += "<h3>⚠️ Виявлені інгредієнти:</h3>";
+              results = data.ingredients; // Зберігаємо інгредієнти для збереження у PDF
               data.ingredients.forEach((ing) => {
                 let className = "";
                 if (ing.risk === "High") className = "danger";
@@ -71,6 +78,29 @@
           resultDiv.innerHTML =
             '<p class="danger">🚫 Не вдалося з\'єднатись з сервером.</p>';
           console.error(err);
+        }
+      });
+
+      // Функція для завантаження результату як PDF
+      const downloadPdfButton = document.getElementById("download-pdf");
+      downloadPdfButton.addEventListener("click", async () => {
+        const response = await fetch("http://127.0.0.1:5000/download_pdf", {
+          method: "POST",
+          body: JSON.stringify({
+            text: document.querySelector("#result .text").innerText, // Отримуємо текст
+            ingredients: results, // Використовуємо знайдені інгредієнти
+          }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (response.status === 200) {
+          const blob = await response.blob();
+          const link = document.createElement("a");
+          link.href = URL.createObjectURL(blob);
+          link.download = "results.pdf";
+          link.click();
         }
       });
     </script>
