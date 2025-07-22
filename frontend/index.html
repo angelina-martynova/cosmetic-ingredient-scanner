@@ -61,11 +61,11 @@
                 else if (ing.risk === "Safe") className = "safe";
 
                 html += `<div class="${className}">
-            <strong>${ing.name}</strong><br>
-            Категорія: ${ing.category || "Невідомо"}<br>
-            Ризик: ${ing.risk}<br>
-            ${ing.description}
-          </div>`;
+                  <strong>${ing.name}</strong><br>
+                  Категорія: ${ing.category || "Невідомо"}<br>
+                  Ризик: ${ing.risk}<br>
+                  ${ing.description}
+                </div>`;
               });
             }
 
@@ -87,7 +87,7 @@
         const response = await fetch("http://127.0.0.1:5000/download_pdf", {
           method: "POST",
           body: JSON.stringify({
-            text: document.querySelector("#result .text").innerText, // Отримуємо текст
+            text: resultDiv.querySelector("div").innerText, // Отримуємо текст
             ingredients: results, // Використовуємо знайдені інгредієнти
           }),
           headers: {

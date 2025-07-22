@@ -3,7 +3,10 @@ from flask_cors import CORS
 import json, os
 from ocr import extract_text
 from reportlab.lib.pagesizes import letter
+from reportlab.lib import colors
 from reportlab.pdfgen import canvas
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.platypus import SimpleDocTemplate, Paragraph
 import io
 
 app = Flask(__name__, static_folder='../frontend/static', template_folder='../frontend')
@@ -22,7 +25,7 @@ def load_blacklist():
     all_blacklist = blacklist + blacklist_auto + full_blacklist
     unique_blacklist = []
     seen_names = set()
-    
+
     print("Завантажено інгредієнтів:", len(all_blacklist))  # Логування кількості інгредієнтів
 
     for ingredient in all_blacklist:
@@ -36,12 +39,11 @@ def load_blacklist():
 def check_ingredients(text):
     blacklist = load_blacklist()  # Завантажуємо злитий чорний список
     found_ingredients = []
-    
+
     print("Текст для перевірки інгредієнтів:", text)  # Логування тексту перед пошуком
 
     # Шукаємо інгредієнти в очищеному тексті
     for ingredient in blacklist:
-        # Перевіряємо чи є інгредієнт у тексті (без урахування регістру)
         if any(alias.lower() in text.lower() for alias in ingredient["aliases"]) or ingredient["name"].lower() in text.lower():
             found_ingredients.append(ingredient)
             print(f"Знайдено інгредієнт: {ingredient['name']}")  # Логування знайдених інгредієнтів
@@ -51,27 +53,41 @@ def check_ingredients(text):
 
     return found_ingredients
 
-# Генерація PDF
+# Генерація PDF з форматуванням
 def generate_pdf(text, ingredients):
     buffer = io.BytesIO()
-    c = canvas.Canvas(buffer, pagesize=letter)
+    doc = SimpleDocTemplate(buffer, pagesize=letter)
+    story = []
 
-    # Додаємо заголовок
-    c.setFont("Helvetica-Bold", 16)
-    c.drawString(72, 750, "Результати аналізу складу косметичного засобу")
+    # Отримуємо стилі для форматування
+    styles = getSampleStyleSheet()
 
-    # Додаємо розпізнаний текст
-    c.setFont("Helvetica", 12)
-    c.drawString(72, 720, f"Розпізнаний текст: {text}")
+    # Заголовок
+    header_style = ParagraphStyle('Header', parent=styles['Heading1'], fontSize=16, spaceAfter=10)
+    header = Paragraph("Результати аналізу складу косметичного засобу", header_style)
+    story.append(header)
 
-    # Додаємо знайдені інгредієнти
-    y_position = 690
-    for ingredient in ingredients:
-        c.drawString(72, y_position, f"{ingredient['name']}: {ingredient.get('description', 'Невідомо')}")
-        y_position -= 20
+    # Розпізнаний текст
+    text_style = ParagraphStyle('Text', parent=styles['Normal'], fontSize=12, spaceAfter=10)
+    recognized_text = Paragraph(f"<b>Розпізнаний текст:</b><br/> {text}", text_style)
+    story.append(recognized_text)
 
-    c.showPage()
-    c.save()
+    # Виявлені інгредієнти
+    if ingredients:
+        ingredient_header = Paragraph("<b>Виявлені інгредієнти:</b>", header_style)
+        story.append(ingredient_header)
+
+        for ingredient in ingredients:
+            risk = ingredient.get('risk', 'Невідомо')
+            description = ingredient.get('description', 'Невідомо')
+
+            # Форматуємо для кожного інгредієнта
+            ingredient_text = f"<b>{ingredient['name']}</b> - Ризик: {risk}<br/> Опис: {description}"
+            ingredient_paragraph = Paragraph(ingredient_text, text_style)
+            story.append(ingredient_paragraph)
+
+    # Створення PDF
+    doc.build(story)
 
     buffer.seek(0)
     return buffer
@@ -93,23 +109,27 @@ def analyze_image():
             "ingredients": results
         })
     except Exception as e:
-        return jsonify({"status": "error", "message": "Помилка під час аналізу. Спробуйте інше фото."}), 500
+        return jsonify({"status": "error", "message": f"Помилка під час аналізу: {e}"}), 500
 
 @app.route('/download_pdf', methods=['POST'])
 def download_pdf():
-    data = request.get_json()
-    text = data['text']
-    ingredients = data['ingredients']
+    try:
+        data = request.get_json()  # Отримуємо JSON з запиту
+        text = data['text']  # Отримуємо текст
+        ingredients = data['ingredients']  # Отримуємо інгредієнти
 
-    # Генерація PDF
-    pdf_file = generate_pdf(text, ingredients)
+        # Генерація PDF
+        pdf_file = generate_pdf(text, ingredients)
 
-    # Відправка PDF як відповіді
-    response = make_response(pdf_file.read())
-    response.headers["Content-Type"] = "application/pdf"
-    response.headers["Content-Disposition"] = "attachment; filename=results.pdf"
+        # Відправка PDF як відповіді
+        response = make_response(pdf_file.read())
+        response.headers["Content-Type"] = "application/pdf"
+        response.headers["Content-Disposition"] = "attachment; filename=results.pdf"
 
-    return response
+        return response
+    
+    except Exception as e:
+        return jsonify({"status": "error", "message": f"Помилка при створенні PDF: {e}"}), 500
 
 # Статичні файли (CSS, зображення тощо)
 @app.route('/static/<path:filename>')
